@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:fragment="head(title)">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${title} + ' | ShopEase'">ShopEase</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <script th:src="@{/js/app.js}" defer></script>
+</head>
+
+<body>
+<header th:fragment="navbar" class="topbar">
+  <div class="inner">
+    <a class="brand" th:href="@{/}">Shop<span>Ease</span></a>
+    <form class="search" th:action="@{/products}" method="get" role="search">
+      <input type="text" name="q" placeholder="Search products" aria-label="Search products">
+      <button type="submit">Search</button>
+    </form>
+    <nav aria-label="Main">
+      <a th:href="@{/products}">Products</a>
+      <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin}">Admin</a>
+      <a sec:authorize="isAuthenticated()" th:href="@{/orders}">Orders</a>
+      <a sec:authorize="isAuthenticated()" th:href="@{/cart}">Cart<span class="badge" th:text="${cartCount}">0</span></a>
+      <a sec:authorize="isAuthenticated()" th:href="@{/profile}" sec:authentication="name">me</a>
+      <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" style="display:inline">
+        <button type="submit" class="link">Log out</button>
+      </form>
+      <a sec:authorize="!isAuthenticated()" th:href="@{/login}">Log in</a>
+      <a sec:authorize="!isAuthenticated()" th:href="@{/register}">Create account</a>
+    </nav>
+  </div>
+</header>
+
+<div th:fragment="flash">
+  <p class="alert ok" th:if="${success}" th:text="${success}" role="status"></p>
+  <p class="alert err" th:if="${error}" th:text="${error}" role="alert"></p>
+</div>
+
+<span th:fragment="price(v)" class="price" th:text="'₹' + ${#numbers.formatDecimal(v, 1, 'COMMA', 2, 'POINT')}">₹0.00</span>
+
+<article th:fragment="productCard(p)" class="card">
+  <a class="card-media" th:href="@{/products/{id}(id=${p.id})}">
+    <img th:if="${p.imageUrl != null}" th:src="@{${p.imageUrl}}" th:alt="${p.name}">
+    <span th:unless="${p.imageUrl != null}" class="ph" aria-hidden="true" th:text="${#strings.substring(p.name, 0, 1)}">A</span>
+  </a>
+  <div class="card-body">
+    <span class="tag" th:text="${p.category != null} ? ${p.category.name} : ''">Category</span>
+    <h3><a th:href="@{/products/{id}(id=${p.id})}" th:text="${p.name}">Product</a></h3>
+    <span th:replace="~{fragments :: price(${p.price})}"></span>
+    <span class="stock-out" th:if="${p.stock == 0}">Out of stock</span>
+    <span class="stock-low" th:if="${p.stock > 0 and p.stock <= 5}" th:text="'Only ' + ${p.stock} + ' left'">Only 3 left</span>
+  </div>
+</article>
+
+<nav th:fragment="adminNav(active)" class="admin-nav" aria-label="Admin">
+  <a th:href="@{/admin}" th:classappend="${active == 'dashboard'} ? 'active'">Dashboard</a>
+  <a th:href="@{/admin/products}" th:classappend="${active == 'products'} ? 'active'">Products</a>
+  <a th:href="@{/admin/orders}" th:classappend="${active == 'orders'} ? 'active'">Orders</a>
+  <a th:href="@{/admin/users}" th:classappend="${active == 'users'} ? 'active'">Users</a>
+</nav>
+
+<footer th:fragment="footer" class="footer">ShopEase demo store · Built with Spring Boot, JPA and MySQL</footer>
+</body>
+</html>

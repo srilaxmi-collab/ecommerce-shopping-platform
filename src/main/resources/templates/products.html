@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Products')}"></head>
+<body>
+<header th:replace="~{fragments :: navbar}"></header>
+<main class="container">
+  <div th:replace="~{fragments :: flash}"></div>
+  <h1>Products</h1>
+  <form class="filters panel" th:action="@{/products}" method="get">
+    <div><label for="q">Search</label><input type="text" id="q" name="q" th:value="${q}" placeholder="Name or description"></div>
+    <div><label for="category">Category</label>
+      <select id="category" name="category">
+        <option value="">All categories</option>
+        <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}" th:selected="${category != null and category == c.id}">Cat</option>
+      </select></div>
+    <div><label for="minPrice">Min ₹</label><input type="number" id="minPrice" name="minPrice" min="0" step="1" th:value="${minPrice}"></div>
+    <div><label for="maxPrice">Max ₹</label><input type="number" id="maxPrice" name="maxPrice" min="0" step="1" th:value="${maxPrice}"></div>
+    <div><label for="sort">Sort by</label>
+      <select id="sort" name="sort">
+        <option value="newest" th:selected="${sort == 'newest'}">Newest</option>
+        <option value="price_asc" th:selected="${sort == 'price_asc'}">Price: low to high</option>
+        <option value="price_desc" th:selected="${sort == 'price_desc'}">Price: high to low</option>
+        <option value="name" th:selected="${sort == 'name'}">Name</option>
+      </select></div>
+    <button class="btn" type="submit">Apply</button>
+  </form>
+
+  <p class="muted" th:text="${page.totalElements} + ' product(s) found'">0 products</p>
+  <p th:if="${page.empty}">Nothing matches those filters. <a th:href="@{/products}">Clear filters</a></p>
+  <div class="grid">
+    <th:block th:each="p : ${page.content}"><div th:replace="~{fragments :: productCard(${p})}"></div></th:block>
+  </div>
+
+  <nav class="pager" th:if="${page.totalPages > 1}" aria-label="Pages">
+    <a th:if="${page.hasPrevious()}" th:href="@{/products(q=${q},category=${category},minPrice=${minPrice},maxPrice=${maxPrice},sort=${sort},page=${page.number - 1})}">Previous</a>
+    <th:block th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}">
+      <span class="current" th:if="${i == page.number}" th:text="${i + 1}" aria-current="page">1</span>
+      <a th:unless="${i == page.number}" th:href="@{/products(q=${q},category=${category},minPrice=${minPrice},maxPrice=${maxPrice},sort=${sort},page=${i})}" th:text="${i + 1}">2</a>
+    </th:block>
+    <a th:if="${page.hasNext()}" th:href="@{/products(q=${q},category=${category},minPrice=${minPrice},maxPrice=${maxPrice},sort=${sort},page=${page.number + 1})}">Next</a>
+  </nav>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

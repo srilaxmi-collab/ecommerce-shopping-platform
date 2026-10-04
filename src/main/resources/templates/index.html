@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Home')}"></head>
+<body>
+<header th:replace="~{fragments :: navbar}"></header>
+<main class="container">
+  <div th:replace="~{fragments :: flash}"></div>
+  <section class="hero">
+    <h1>Everyday things, delivered to your door</h1>
+    <p>Browse electronics, books, fashion and home essentials. Pay by card, UPI or cash on delivery.</p>
+    <div class="chips">
+      <a th:each="c : ${categories}" th:href="@{/products(category=${c.id})}" th:text="${c.name}">Category</a>
+    </div>
+  </section>
+  <h2>Latest products</h2>
+  <p class="muted" th:if="${#lists.isEmpty(products)}">No products yet. An admin can add some from the dashboard.</p>
+  <div class="grid">
+    <th:block th:each="p : ${products}"><div th:replace="~{fragments :: productCard(${p})}"></div></th:block>
+  </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Your cart')}"></head>
+<body>
+<header th:replace="~{fragments :: navbar}"></header>
+<main class="container">
+  <h1>Your cart</h1>
+  <div th:replace="~{fragments :: flash}"></div>
+  <div class="panel" th:if="${#lists.isEmpty(items)}">
+    <p>Your cart is empty.</p>
+    <a class="btn" th:href="@{/products}">Browse products</a>
+  </div>
+  <div class="two-col" th:unless="${#lists.isEmpty(items)}">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Product</th><th>Price</th><th>Quantity</th><th class="right">Subtotal</th><th></th></tr></thead>
+        <tbody>
+          <tr th:each="i : ${items}">
+            <td><a th:href="@{/products/{id}(id=${i.product.id})}" th:text="${i.product.name}">Product</a></td>
+            <td><span th:replace="~{fragments :: price(${i.product.price})}"></span></td>
+            <td>
+              <form class="inline" th:action="@{/cart/update}" method="post">
+                <input type="hidden" name="itemId" th:value="${i.id}">
+                <input type="number" name="quantity" th:value="${i.quantity}" min="0" th:max="${i.product.stock}" aria-label="Quantity">
+                <button class="btn secondary small" type="submit">Update</button>
+              </form>
+            </td>
+            <td class="right"><span th:replace="~{fragments :: price(${i.subtotal})}"></span></td>
+            <td>
+              <form th:action="@{/cart/remove}" method="post">
+                <input type="hidden" name="itemId" th:value="${i.id}">
+                <button class="btn secondary small" type="submit">Remove</button>
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <aside class="panel">
+      <h2>Order summary</h2>
+      <p>Total <span th:replace="~{fragments :: price(${total})}"></span></p>
+      <a class="btn" th:href="@{/checkout}">Proceed to checkout</a>
+    </aside>
+  </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Your profile')}"></head>
+<body>
+<header th:replace="~{fragments :: navbar}"></header>
+<main class="container">
+  <div th:replace="~{fragments :: flash}"></div>
+  <form class="panel narrow" th:action="@{/profile}" method="post">
+    <h1>Your profile</h1>
+    <p class="muted" th:text="${profileUser.email} + ' · ' + ${orderCount} + ' order(s)'">email</p>
+    <label for="firstName">First name</label>
+    <input type="text" id="firstName" name="firstName" th:value="${profileUser.firstName}" required>
+    <label for="lastName">Last name</label>
+    <input type="text" id="lastName" name="lastName" th:value="${profileUser.lastName}" required>
+    <p><button class="btn" type="submit">Save changes</button> <a class="btn secondary" th:href="@{/orders}">View orders</a></p>
+  </form>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

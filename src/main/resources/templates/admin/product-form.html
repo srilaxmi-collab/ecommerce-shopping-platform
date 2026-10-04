@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head(${product.id == null} ? 'Add product' : 'Edit product')}"></head>
+<body>
+<header th:replace="~{fragments :: navbar}"></header>
+<main class="container">
+  <h1 th:text="${product.id == null} ? 'Add product' : 'Edit product'">Product</h1>
+  <div th:replace="~{fragments :: adminNav('products')}"></div>
+  <div th:replace="~{fragments :: flash}"></div>
+  <form class="panel" style="max-width:640px" th:action="@{/admin/products}" th:object="${product}" method="post" enctype="multipart/form-data">
+    <input type="hidden" th:field="*{id}">
+    <input type="hidden" th:field="*{imageUrl}">
+
+    <label for="name">Name</label>
+    <input type="text" id="name" th:field="*{name}">
+    <p class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
+
+    <label for="description">Description</label>
+    <textarea id="description" th:field="*{description}" maxlength="2000"></textarea>
+    <p class="field-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
+
+    <label for="price">Price (₹)</label>
+    <input type="number" id="price" th:field="*{price}" step="0.01" min="0.01">
+    <p class="field-error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></p>
+
+    <label for="stock">Stock</label>
+    <input type="number" id="stock" th:field="*{stock}" min="0">
+    <p class="field-error" th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}"></p>
+
+    <label for="categoryId">Category</label>
+    <select id="categoryId" th:field="*{categoryId}">
+      <option value="">Choose a category</option>
+      <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}">Cat</option>
+    </select>
+    <p class="field-error" th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}"></p>
+
+    <label for="image">Image (JPG, PNG, GIF or WEBP, max 5 MB)</label>
+    <img class="thumb" th:if="${product.imageUrl != null and !#strings.isEmpty(product.imageUrl)}" th:src="@{${product.imageUrl}}" alt="Current image">
+    <input type="file" id="image" name="image" accept="image/*">
+
+    <p><button class="btn" type="submit">Save product</button> <a class="btn secondary" th:href="@{/admin/products}">Cancel</a></p>
+  </form>
+</main>
+</body>
+</html>

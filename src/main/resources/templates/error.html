@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Something went wrong')}"></head>
+<body>
+<header th:replace="~{fragments :: navbar}"></header>
+<main class="container">
+  <div class="panel narrow">
+    <h1 th:text="${status == 404} ? 'Page not found' : (${status == 403} ? 'Access denied' : 'Something went wrong')">Error</h1>
+    <p th:text="${status == 404} ? 'We couldn’t find what you were looking for.' : (${status == 403} ? 'You don’t have permission to view this page.' : 'Try again in a moment.')">Message</p>
+    <a class="btn" th:href="@{/}">Back to home</a>
+  </div>
+</main>
+</body>
+</html>

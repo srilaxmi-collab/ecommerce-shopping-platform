@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Manage products')}"></head>
+<body>
+<header th:replace="~{fragments :: navbar}"></header>
+<main class="container">
+  <h1>Products</h1>
+  <div th:replace="~{fragments :: adminNav('products')}"></div>
+  <div th:replace="~{fragments :: flash}"></div>
+  <p><a class="btn" th:href="@{/admin/products/new}">Add product</a></p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th></th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th></th></tr></thead>
+      <tbody>
+        <tr th:each="p : ${products}">
+          <td><img class="thumb" th:if="${p.imageUrl != null}" th:src="@{${p.imageUrl}}" alt=""></td>
+          <td th:text="${p.name}">Name</td>
+          <td th:text="${p.category != null} ? ${p.category.name} : '-'">Cat</td>
+          <td><span th:replace="~{fragments :: price(${p.price})}"></span></td>
+          <td th:text="${p.stock}" th:class="${p.stock == 0} ? 'stock-out' : (${p.stock <= 5} ? 'stock-low' : '')">10</td>
+          <td>
+            <a class="btn secondary small" th:href="@{/admin/products/{id}/edit(id=${p.id})}">Edit</a>
+            <form class="inline" th:action="@{/admin/products/{id}/delete(id=${p.id})}" method="post"
+                  onsubmit="return confirm('Delete this product?')">
+              <button class="btn danger small" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <form class="panel" style="margin-top:1.5rem;max-width:520px" th:action="@{/admin/categories}" method="post">
+    <h2>Add category</h2>
+    <label for="name">Name</label><input type="text" id="name" name="name" required>
+    <label for="description">Description</label><input type="text" id="description" name="description">
+    <p><button class="btn" type="submit">Add category</button></p>
+    <p class="muted" th:text="'Existing: ' + ${#strings.listJoin(categories.![name], ', ')}">Existing</p>
+  </form>
+</main>
+</body>
+</html>

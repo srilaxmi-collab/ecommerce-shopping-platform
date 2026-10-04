@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Manage users')}"></head>
+<body>
+<header th:replace="~{fragments :: navbar}"></header>
+<main class="container">
+  <h1>Users</h1>
+  <div th:replace="~{fragments :: adminNav('users')}"></div>
+  <div th:replace="~{fragments :: flash}"></div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        <tr th:each="u : ${users}">
+          <td th:text="${u.fullName}">Name</td>
+          <td th:text="${u.email}">email</td>
+          <td th:text="${u.role}">USER</td>
+          <td th:text="${u.enabled} ? 'Active' : 'Disabled'">Active</td>
+          <td>
+            <form th:action="@{/admin/users/{id}/toggle(id=${u.id})}" method="post">
+              <button class="btn secondary small" type="submit" th:text="${u.enabled} ? 'Disable' : 'Enable'">Disable</button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+</body>
+</html>

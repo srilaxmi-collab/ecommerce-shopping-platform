@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Manage orders')}"></head>
+<body>
+<header th:replace="~{fragments :: navbar}"></header>
+<main class="container">
+  <h1>Orders</h1>
+  <div th:replace="~{fragments :: adminNav('orders')}"></div>
+  <div th:replace="~{fragments :: flash}"></div>
+  <p class="muted" th:if="${#lists.isEmpty(orders)}">No orders yet.</p>
+  <div class="table-wrap" th:unless="${#lists.isEmpty(orders)}">
+    <table>
+      <thead><tr><th>Order</th><th>Customer</th><th>Date</th><th>Items</th><th>Total</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr th:each="o : ${orders}">
+          <td th:text="'#' + ${o.id}">#1</td>
+          <td th:text="${o.user.email}">email</td>
+          <td th:text="${#temporals.format(o.orderDate, 'dd MMM yyyy, HH:mm')}">date</td>
+          <td><span th:each="i, st : ${o.items}" th:text="${i.quantity} + ' × ' + ${i.product.name} + (${st.last} ? '' : ', ')">item</span></td>
+          <td><span th:replace="~{fragments :: price(${o.totalAmount})}"></span></td>
+          <td>
+            <form class="inline" th:action="@{/admin/orders/{id}/status(id=${o.id})}" method="post">
+              <select name="status" th:disabled="${o.status.name() == 'CANCELLED'}" aria-label="Order status">
+                <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}" th:selected="${s == o.status}">PAID</option>
+              </select>
+              <button class="btn secondary small" type="submit" th:disabled="${o.status.name() == 'CANCELLED'}">Update</button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+</body>
+</html>

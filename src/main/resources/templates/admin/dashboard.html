@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Admin dashboard')}"></head>
+<body>
+<header th:replace="~{fragments :: navbar}"></header>
+<main class="container">
+  <h1>Admin dashboard</h1>
+  <div th:replace="~{fragments :: adminNav('dashboard')}"></div>
+  <div th:replace="~{fragments :: flash}"></div>
+  <section class="stats">
+    <div class="stat"><span class="muted">Products</span><b th:text="${productCount}">0</b></div>
+    <div class="stat"><span class="muted">Orders</span><b th:text="${orderCount}">0</b></div>
+    <div class="stat"><span class="muted">Users</span><b th:text="${userCount}">0</b></div>
+    <div class="stat"><span class="muted">Revenue (excl. cancelled)</span><b th:text="'₹' + ${#numbers.formatDecimal(revenue, 1, 'COMMA', 2, 'POINT')}">₹0</b></div>
+  </section>
+
+  <h2>Low stock (5 or fewer)</h2>
+  <p class="muted" th:if="${#lists.isEmpty(lowStock)}">Everything is well stocked.</p>
+  <div class="table-wrap" th:unless="${#lists.isEmpty(lowStock)}">
+    <table>
+      <thead><tr><th>Product</th><th>Stock</th><th></th></tr></thead>
+      <tbody><tr th:each="p : ${lowStock}">
+        <td th:text="${p.name}">Product</td>
+        <td th:text="${p.stock}" th:class="${p.stock == 0} ? 'stock-out' : 'stock-low'">3</td>
+        <td><a class="btn secondary small" th:href="@{/admin/products/{id}/edit(id=${p.id})}">Restock</a></td>
+      </tr></tbody>
+    </table>
+  </div>
+
+  <h2 style="margin-top:1.5rem">Recent orders</h2>
+  <p class="muted" th:if="${#lists.isEmpty(recentOrders)}">No orders yet.</p>
+  <div class="table-wrap" th:unless="${#lists.isEmpty(recentOrders)}">
+    <table>
+      <thead><tr><th>Order</th><th>Customer</th><th>Status</th><th class="right">Total</th></tr></thead>
+      <tbody><tr th:each="o : ${recentOrders}">
+        <td th:text="'#' + ${o.id}">#1</td>
+        <td th:text="${o.user.email}">email</td>
+        <td><span class="status" th:classappend="${o.status.name()}" th:text="${o.status}">PAID</span></td>
+        <td class="right"><span th:replace="~{fragments :: price(${o.totalAmount})}"></span></td>
+      </tr></tbody>
+    </table>
+  </div>
+</main>
+</body>
+</html>

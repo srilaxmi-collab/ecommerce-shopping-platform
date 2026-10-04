@@ -108,3 +108,4 @@ Any platform that runs a Java 17 JAR or a Docker image works (Render, Railway, A
 - [ ] 5–7 min demo video uploaded to YouTube (public/unlisted)
 - [ ] Live demo URL
 - [ ] Blog post at freeinternships.in with title `E-Commerce Shopping Platform - DAS-JV-001`
+"# ecommerce-shopping-platform" 

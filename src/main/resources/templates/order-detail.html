@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Order #' + ${order.id})}"></head>
+<body>
+<header th:replace="~{fragments :: navbar}"></header>
+<main class="container">
+  <div th:replace="~{fragments :: flash}"></div>
+  <p><a th:href="@{/orders}">&larr; All orders</a></p>
+  <h1 th:text="'Order #' + ${order.id}">Order</h1>
+  <p class="muted" th:text="'Placed ' + ${#temporals.format(order.orderDate, 'dd MMM yyyy, HH:mm')} + ' · Payment: ' + ${order.paymentMethod}">Placed</p>
+
+  <p class="alert err" th:if="${order.status.name() == 'CANCELLED'}">This order was cancelled.</p>
+  <ol class="tracker" th:unless="${order.status.name() == 'CANCELLED'}" aria-label="Order progress">
+    <li th:each="label, it : ${ {'Order placed', 'Payment received', 'Shipped', 'Delivered'} }"
+        th:classappend="${order.status.ordinal() >= it.index} ? 'done'" th:text="${label}">Step</li>
+  </ol>
+
+  <div class="two-col">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Product</th><th>Price</th><th>Qty</th><th class="right">Subtotal</th></tr></thead>
+        <tbody>
+          <tr th:each="i : ${order.items}">
+            <td><a th:href="@{/products/{id}(id=${i.product.id})}" th:text="${i.product.name}">Product</a></td>
+            <td><span th:replace="~{fragments :: price(${i.price})}"></span></td>
+            <td th:text="${i.quantity}">1</td>
+            <td class="right"><span th:replace="~{fragments :: price(${i.subtotal})}"></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <aside class="panel">
+      <h2>Summary</h2>
+      <p>Status: <span class="status" th:classappend="${order.status.name()}" th:text="${order.status}">PAID</span></p>
+      <p>Total <span th:replace="~{fragments :: price(${order.totalAmount})}"></span></p>
+      <h3>Shipping to</h3>
+      <p style="white-space:pre-line" th:text="${order.shippingAddress}">Address</p>
+      <form th:if="${order.status.name() == 'PENDING' or order.status.name() == 'PAID'}" th:action="@{/orders/{id}/cancel(id=${order.id})}" method="post">
+        <button class="btn danger" type="submit">Cancel order</button>
+      </form>
+    </aside>
+  </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

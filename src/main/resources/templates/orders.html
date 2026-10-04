@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Your orders')}"></head>
+<body>
+<header th:replace="~{fragments :: navbar}"></header>
+<main class="container">
+  <h1>Your orders</h1>
+  <div th:replace="~{fragments :: flash}"></div>
+  <div class="panel" th:if="${#lists.isEmpty(orders)}">
+    <p>You haven't placed any orders yet.</p>
+    <a class="btn" th:href="@{/products}">Start shopping</a>
+  </div>
+  <div class="table-wrap" th:unless="${#lists.isEmpty(orders)}">
+    <table>
+      <thead><tr><th>Order</th><th>Date</th><th>Items</th><th>Status</th><th class="right">Total</th></tr></thead>
+      <tbody>
+        <tr th:each="o : ${orders}">
+          <td><a th:href="@{/orders/{id}(id=${o.id})}" th:text="'#' + ${o.id}">#1</a></td>
+          <td th:text="${#temporals.format(o.orderDate, 'dd MMM yyyy, HH:mm')}">date</td>
+          <td th:text="${#lists.size(o.items)}">1</td>
+          <td><span class="status" th:classappend="${o.status.name()}" th:text="${o.status}">PAID</span></td>
+          <td class="right"><span th:replace="~{fragments :: price(${o.totalAmount})}"></span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

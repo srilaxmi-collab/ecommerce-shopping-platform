@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Checkout')}"></head>
+<body>
+<header th:replace="~{fragments :: navbar}"></header>
+<main class="container">
+  <h1>Checkout</h1>
+  <div th:replace="~{fragments :: flash}"></div>
+  <div class="two-col">
+    <form class="panel" th:action="@{/checkout}" th:object="${orderDto}" method="post">
+      <h2>Shipping address</h2>
+      <label for="shippingAddress">Full address</label>
+      <textarea id="shippingAddress" th:field="*{shippingAddress}" placeholder="Name, street, city, PIN code"></textarea>
+      <p class="field-error" th:if="${#fields.hasErrors('shippingAddress')}" th:errors="*{shippingAddress}"></p>
+
+      <h2 style="margin-top:1.2rem">Payment</h2>
+      <label class="radio-row"><input type="radio" th:field="*{paymentMethod}" value="CARD"> Credit / debit card</label>
+      <label class="radio-row"><input type="radio" th:field="*{paymentMethod}" value="UPI"> UPI</label>
+      <label class="radio-row"><input type="radio" th:field="*{paymentMethod}" value="COD"> Cash on delivery</label>
+      <p class="muted">Payments are simulated in this demo. No money is charged.</p>
+      <p class="field-error" th:if="${#fields.hasErrors('paymentMethod')}" th:errors="*{paymentMethod}"></p>
+      <button class="btn" type="submit" data-once>Place order</button>
+    </form>
+    <aside class="panel">
+      <h2>Your items</h2>
+      <p th:each="i : ${items}"><span th:text="${i.quantity} + ' × ' + ${i.product.name}">1 × Item</span><br>
+        <span th:replace="~{fragments :: price(${i.subtotal})}"></span></p>
+      <hr>
+      <p><strong>Total</strong> <span th:replace="~{fragments :: price(${total})}"></span></p>
+      <a th:href="@{/cart}">Edit cart</a>
+    </aside>
+  </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>
